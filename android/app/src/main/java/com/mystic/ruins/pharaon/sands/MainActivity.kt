@@ -1,4 +1,4 @@
-package com.mysticruinspharaonsands
+package com.mystic.ruins.pharaon.sands
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

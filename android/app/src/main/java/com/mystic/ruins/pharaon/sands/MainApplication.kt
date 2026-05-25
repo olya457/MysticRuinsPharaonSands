@@ -1,4 +1,4 @@
-package com.mysticruinspharaonsands
+package com.mystic.ruins.pharaon.sands
 
 import android.app.Application
 import com.facebook.react.PackageList
