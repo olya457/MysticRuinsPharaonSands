@@ -31,5 +31,42 @@ target 'MysticRuinsPharaonSands' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    installer.pods_project.targets.each do |target|
+      next unless target.name == 'fmt'
+
+      target.build_configurations.each do |build_config|
+        build_config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+      end
+    end
+
+    sandbox_root = Pod::Config.instance.sandbox_root.to_s
+    Dir.glob(File.join(sandbox_root, 'Target Support Files', 'fmt', 'fmt.*.xcconfig')).each do |xcconfig|
+      contents = File.read(xcconfig)
+      patched = contents.gsub(
+        /^CLANG_CXX_LANGUAGE_STANDARD = .+$/,
+        'CLANG_CXX_LANGUAGE_STANDARD = c++17'
+      )
+      File.write(xcconfig, patched) if patched != contents
+    end
+
+    fmt_base_header = File.join(
+      sandbox_root,
+      'fmt',
+      'include',
+      'fmt',
+      'base.h'
+    )
+    if File.exist?(fmt_base_header)
+      contents = File.read(fmt_base_header)
+      patched = contents.gsub(
+        /#\s*define\s+FMT_USE_CONSTEVAL\s+1/,
+        '#  define FMT_USE_CONSTEVAL 0'
+      )
+      if patched != contents
+        File.chmod(0o644, fmt_base_header)
+        File.write(fmt_base_header, patched)
+      end
+    end
   end
 end
